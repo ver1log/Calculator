@@ -45,7 +45,7 @@ void Calculator::run(){
         SDL_RenderClear(renderer);
         
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); 
-        for(int i = 0;i<12; i++){
+        for(int i = 0;i<rects.size(); i++){
             SDL_RenderFillRect(renderer,&rects[i]);
         }
         SDL_SetRenderDrawColor(renderer, 110, 110, 110, 0); 
