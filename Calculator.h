@@ -8,8 +8,10 @@
 using namespace std;
 
 const int WIDTH = 440;
-const int HEIGHT = 370;
+const int HEIGHT = 500;
 const int DELTA = 1;
+const int BLOCKWIDTH = 80;
+const int BLOCKHEIGHT = 80;
 class Calculator{
     private:
         vector<string> keys;
@@ -31,6 +33,9 @@ class Calculator{
         SDL_Rect rect10{121,291,80,80};
         SDL_Rect rect11{241,291,80,80};
         SDL_Rect rect12{361,291,80,80};
+        SDL_Rect rect13{0,401,80,80};
+        SDL_Rect rect14{121,401,80,80};
+        SDL_Rect rect15{241,401,80,80};
         map<string, SDL_Rect> mapper;
     public:
     Calculator(){
@@ -66,7 +71,9 @@ class Calculator{
         rects.push_back(rect10);
         rects.push_back(rect11);
         rects.push_back(rect12);
-        
+        rects.push_back(rect13);
+        rects.push_back(rect14);
+        rects.push_back(rect15);
         
         mapper.insert(make_pair("1",rect1));
         mapper.insert(make_pair("2",rect2));
@@ -80,6 +87,9 @@ class Calculator{
         mapper.insert(make_pair("0",rect10));
         mapper.insert(make_pair("+",rect11));
         mapper.insert(make_pair("-",rect12));
+        mapper.insert(make_pair("*",rect13));
+        mapper.insert(make_pair("/",rect14));
+        mapper.insert(make_pair("=",rect15));
     }
     ~Calculator(){
         for(int i = keys.size()-1; i<0; i--){
