@@ -22,7 +22,8 @@ class Calculator{
         SDL_Event event; //event object
         TTF_Font* font = nullptr;
         SDL_Surface* surfaceMessage = nullptr;
-        SDL_Texture* Message = nullptr;
+        SDL_Texture* barMessage = nullptr;
+        SDL_Texture* buttonMessage = nullptr;
         //set some rectangle fields
         vector<SDL_Rect> rects;
         SDL_Rect bar{10,10,420,50};
@@ -41,7 +42,18 @@ class Calculator{
         SDL_Rect rect13{0,401,80,80};
         SDL_Rect rect14{121,401,80,80};
         SDL_Rect rect15{241,401,80,80};
-        map<string, SDL_Rect> mapper;
+        SDL_Rect rect16{361,401,80,80};
+        struct SDL_RectComparator
+        {
+            bool operator()(const SDL_Rect& a, const SDL_Rect& b) const
+            {
+                if (a.x != b.x) return a.x < b.x;
+                if (a.y != b.y) return a.y < b.y;
+                if (a.w != b.w) return a.w < b.w;
+                return a.h < b.h;
+            }
+        };
+         std::map<SDL_Rect, std::string, SDL_RectComparator> mapper;
     public:
     Calculator(){
         //to get a screen we need both a window and renderer
@@ -79,31 +91,33 @@ class Calculator{
         rects.push_back(rect13);
         rects.push_back(rect14);
         rects.push_back(rect15);
+        rects.push_back(rect16);
         
-        mapper.insert(make_pair("1",rect1));
-        mapper.insert(make_pair("2",rect2));
-        mapper.insert(make_pair("3",rect3));
-        mapper.insert(make_pair("4",rect4));
-        mapper.insert(make_pair("5",rect5));
-        mapper.insert(make_pair("6",rect6));
-        mapper.insert(make_pair("7",rect7));
-        mapper.insert(make_pair("8",rect8));
-        mapper.insert(make_pair("9",rect9));
-        mapper.insert(make_pair("0",rect10));
-        mapper.insert(make_pair("+",rect11));
-        mapper.insert(make_pair("-",rect12));
-        mapper.insert(make_pair("*",rect13));
-        mapper.insert(make_pair("/",rect14));
-        mapper.insert(make_pair("=",rect15));
+        mapper.insert(std::make_pair(rect1, "1"));
+        mapper.insert(std::make_pair(rect2, "2"));
+        mapper.insert(std::make_pair(rect3, "3"));
+        mapper.insert(std::make_pair(rect4, "4"));
+        mapper.insert(std::make_pair(rect5, "5"));
+        mapper.insert(std::make_pair(rect6, "6"));
+        mapper.insert(std::make_pair(rect7, "7"));
+        mapper.insert(std::make_pair(rect8, "8"));
+        mapper.insert(std::make_pair(rect9, "9"));
+        mapper.insert(std::make_pair(rect10, "0"));
+        mapper.insert(std::make_pair(rect11, "."));
+        mapper.insert(std::make_pair(rect12, "+"));
+        mapper.insert(std::make_pair(rect13, "-"));
+        mapper.insert(std::make_pair(rect14, "*"));
+        mapper.insert(std::make_pair(rect15, "/"));
+        mapper.insert(std::make_pair(rect16, "="));
+
         //text stuff
         TTF_Init();
-        font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 24); //font
+        font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 100); //font
         if(!font) {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(1);
         }
-        surfaceMessage = TTF_RenderText_Solid(font, "loooooooooloooookook", WHITE);
-        Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //message itself;
+        
         
     }
     ~Calculator(){
@@ -113,7 +127,8 @@ class Calculator{
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_FreeSurface(surfaceMessage);
-        SDL_DestroyTexture(Message);
+        SDL_DestroyTexture(barMessage);
+        SDL_DestroyTexture(buttonMessage);
         TTF_CloseFont(font);
         SDL_Quit();
     }
@@ -121,6 +136,6 @@ class Calculator{
         string removeKey(); //when a user deletes the last inputted key
         void displayKeys() const;
         void run();
-        void ToggleRect(int, int);
+        void pressButton(int, int);
 };
 #endif

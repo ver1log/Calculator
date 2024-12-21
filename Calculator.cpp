@@ -8,29 +8,56 @@ void Calculator::run(){
             if (event.type == SDL_QUIT) { //if the user clicks the X
                 running = false;
             }
-            /*
-            else if(event.type == SDL_MOUSEMOTION){
-                    SDL_GetMouseState(&rect1.x,&rect1.y);
-            }
-            */
             else if(event.type == SDL_KEYDOWN){
                 switch (event.key.keysym.sym){         
-                    case SDLK_a:
-                        cout << "Key A: was pressed\n";
-                        rect12.x -= DELTA;
+                    case SDLK_1:
+                        cout << "Key 1: was pressed\n";
                         break;
-                    case SDLK_w:
-                        cout << "Key W: was pressed\n";
-                        rect12.y -= DELTA;
+                    case SDLK_2:
+                        cout << "Key 2: was pressed\n";
                         break;
-                    case SDLK_d:
-                        cout << "Key D: was pressed\n";
-                        rect12.x += DELTA;
+                    case SDLK_3:
+                        cout << "Key 3: was pressed\n";
                         break;
-                    case SDLK_s:
-                        cout << "Key S: was pressed\n";
-                        rect12.y += DELTA;
+                    case SDLK_4:
+                        cout << "Key 4: was pressed\n";
                         break;
+                    case SDLK_5:
+                        cout << "Key 5: was pressed\n";
+                        break;
+                    case SDLK_6:
+                        cout << "Key 6: was pressed\n";
+                        break;
+                    case SDLK_7:
+                        cout << "Key 7: was pressed\n";
+                        break;
+                    case SDLK_8:
+                        cout << "Key 8: was pressed\n";
+                        break;
+                    case SDLK_9:
+                        cout << "Key 9: was pressed\n";
+                        break;
+                    case SDLK_0:
+                        cout << "Key 0: was pressed\n";
+                        break;
+                    case SDLK_PLUS:
+                        cout << "Key +: was pressed\n";
+                        break;
+                    case SDLK_MINUS:
+                        cout << "Key -: was pressed\n";
+                        break;
+                    case SDLK_ASTERISK:
+                        cout << "Key *: was pressed\n";
+                        break;
+                    case SDLK_SLASH:
+                        cout << "Key /: was pressed\n";
+                        break;
+                    case SDLK_EQUALS:
+                        cout << "Key =: was pressed\n";
+                        break;
+                    case SDLK_PERIOD:
+                        cout << "Key .: was pressed\n";
+                        break;    
                 }
             }
             
@@ -38,7 +65,7 @@ void Calculator::run(){
             {
                 int x, y;
                 SDL_GetMouseState(&x, &y);
-                ToggleRect(x, y);
+                pressButton(x, y);
             }
         }
         SDL_SetRenderDrawColor(renderer, 36, 36, 36, 0); 
@@ -50,14 +77,28 @@ void Calculator::run(){
         }
         SDL_SetRenderDrawColor(renderer, 110, 110, 110, 0); 
         SDL_RenderFillRect(renderer,&bar);
-        SDL_RenderCopy(renderer, Message, NULL, &bar);
 
+
+        surfaceMessage = TTF_RenderText_Solid(font, "0000000000000000", WHITE);
+        barMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //message itself;
+        SDL_RenderCopy(renderer, barMessage, NULL, &bar);
+        SDL_DestroyTexture(barMessage); //free the message for the bar so it doesnt get overwritten
+          
+        for(int i = 0; i < rects.size(); i++){
+            auto iter = mapper.find(rects[i]);
+            surfaceMessage = TTF_RenderText_Solid(font, iter->second.c_str(), WHITE);
+            buttonMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+            SDL_FreeSurface(surfaceMessage); // Free the surface to avoid memory leaks
+            SDL_RenderCopy(renderer, buttonMessage, NULL, &rects[i]);
+            SDL_DestroyTexture(buttonMessage); // Free the texture after rendering
+        }
+        
         SDL_RenderPresent(renderer);
-        //SDL_Delay(10);    
+        
     }
 }
 
-void Calculator::ToggleRect(int MouseX, int MouseY)
+void Calculator::pressButton(int MouseX, int MouseY)
 {
     
     SDL_Point MousePos;
@@ -67,9 +108,10 @@ void Calculator::ToggleRect(int MouseX, int MouseY)
     {
         if (SDL_PointInRect(&MousePos, &rects[i])) 
         {      
-            cout << i << endl;
+            auto iter = mapper.find(rects[i]);
+            cout << iter->second << " was pressed" << endl;
         }
-       
+           
     }
 }
 
