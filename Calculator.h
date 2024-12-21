@@ -102,7 +102,7 @@ class Calculator{
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(1);
         }
-        surfaceMessage = TTF_RenderText_Solid(font, "0000000000000", WHITE);
+        surfaceMessage = TTF_RenderText_Solid(font, "loooooooooloooookook", WHITE);
         Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //message itself;
         
     }
