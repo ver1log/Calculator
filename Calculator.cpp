@@ -50,7 +50,7 @@ void Calculator::run(){
         }
         SDL_SetRenderDrawColor(renderer, 110, 110, 110, 0); 
         SDL_RenderFillRect(renderer,&bar);
-        
+        SDL_RenderCopy(renderer, Message, NULL, &bar);
 
         SDL_RenderPresent(renderer);
         //SDL_Delay(10);    

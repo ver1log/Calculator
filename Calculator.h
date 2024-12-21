@@ -1,6 +1,7 @@
 #ifndef CALC_H
 #define CALC_H
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -12,13 +13,17 @@ const int HEIGHT = 500;
 const int DELTA = 1;
 const int BLOCKWIDTH = 80;
 const int BLOCKHEIGHT = 80;
+const SDL_Color WHITE = {255, 255, 255};
 class Calculator{
     private:
         vector<string> keys;
         SDL_Window* window= nullptr;
         SDL_Renderer* renderer = nullptr;
         SDL_Event event; //event object
-        //set some of renderers fields
+        TTF_Font* font = nullptr;
+        SDL_Surface* surfaceMessage = nullptr;
+        SDL_Texture* Message = nullptr;
+        //set some rectangle fields
         vector<SDL_Rect> rects;
         SDL_Rect bar{10,10,420,50};
         SDL_Rect rect1{0,70,80,80};
@@ -90,6 +95,16 @@ class Calculator{
         mapper.insert(make_pair("*",rect13));
         mapper.insert(make_pair("/",rect14));
         mapper.insert(make_pair("=",rect15));
+        //text stuff
+        TTF_Init();
+        font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 24); //font
+        if(!font) {
+            std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+            exit(1);
+        }
+        surfaceMessage = TTF_RenderText_Solid(font, "loooooooooloooookook", WHITE);
+        Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //message itself;
+        
     }
     ~Calculator(){
         for(int i = keys.size()-1; i<0; i--){
@@ -97,6 +112,9 @@ class Calculator{
         }
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        SDL_FreeSurface(surfaceMessage);
+        SDL_DestroyTexture(Message);
+        TTF_CloseFont(font);
         SDL_Quit();
     }
         void addKey(string input); //when a user hits a key
