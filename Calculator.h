@@ -9,7 +9,7 @@
 using namespace std;
 
 const int WIDTH = 440;
-const int HEIGHT = 500;
+const int HEIGHT = 600; //initial was 500 move to 600, increase bar height to 80, shift every buttons y-val 100 higher
 const int DELTA = 1;
 const int BLOCKWIDTH = 80;
 const int BLOCKHEIGHT = 80;
@@ -26,23 +26,24 @@ class Calculator{
         SDL_Texture* buttonMessage = nullptr;
         //set some rectangle fields
         vector<SDL_Rect> rects;
-        SDL_Rect bar{10,10,420,50};
-        SDL_Rect rect1{0,70,80,80};
-        SDL_Rect rect2{121,70,80,80};
-        SDL_Rect rect3{241,70,80,80};
-        SDL_Rect rect4{361,70,80,80};
-        SDL_Rect rect5{0,181,80,80};
-        SDL_Rect rect6{121,181,80,80};
-        SDL_Rect rect7{241,181,80,80};
-        SDL_Rect rect8{361,181,80,80};
-        SDL_Rect rect9{0,291,80,80};
-        SDL_Rect rect10{121,291,80,80};
-        SDL_Rect rect11{241,291,80,80};
-        SDL_Rect rect12{361,291,80,80};
-        SDL_Rect rect13{0,401,80,80};
-        SDL_Rect rect14{121,401,80,80};
-        SDL_Rect rect15{241,401,80,80};
-        SDL_Rect rect16{361,401,80,80};
+        SDL_Rect bar{10,30,420,120};
+        SDL_Rect rect1{0,170,80,80};
+        SDL_Rect rect2{121,170,80,80};
+        SDL_Rect rect3{241,170,80,80};
+        SDL_Rect rect4{361,170,80,80};
+        SDL_Rect rect5{0,281,80,80};
+        SDL_Rect rect6{121,281,80,80};
+        SDL_Rect rect7{241,281,80,80};
+        SDL_Rect rect8{361,281,80,80};
+        SDL_Rect rect9{0,391,80,80};
+        SDL_Rect rect10{121,391,80,80};
+        SDL_Rect rect11{241,391,80,80};
+        SDL_Rect rect12{361,391,80,80};
+        SDL_Rect rect13{0,501,80,80};
+        SDL_Rect rect14{121,501,80,80};
+        SDL_Rect rect15{241,501,80,80};
+        SDL_Rect rect16{361,501,80,80};
+        
         struct SDL_RectComparator
         {
             bool operator()(const SDL_Rect& a, const SDL_Rect& b) const
@@ -76,6 +77,7 @@ class Calculator{
             SDL_DestroyWindow(window);
             SDL_Quit();
         }
+        
         rects.push_back(rect1);
         rects.push_back(rect2);
         rects.push_back(rect3);
@@ -113,6 +115,7 @@ class Calculator{
         //text stuff
         TTF_Init();
         font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 100); //font
+        cout << "font loaded\n";
         if(!font) {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(1);
@@ -121,9 +124,6 @@ class Calculator{
         
     }
     ~Calculator(){
-        for(int i = keys.size()-1; i<0; i--){
-            keys.pop_back();
-        }
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_FreeSurface(surfaceMessage);
@@ -132,10 +132,10 @@ class Calculator{
         TTF_CloseFont(font);
         SDL_Quit();
     }
-        void addKey(string input); //when a user hits a key
-        string removeKey(); //when a user deletes the last inputted key
-        void displayKeys() const;
         void run();
-        void pressButton(int, int);
+        void pressButton(int, int, string&);
+        void doOperation(string&);
+        void parseValidInput(string&);
+        bool validTwoPointerCheck(string);
 };
 #endif
