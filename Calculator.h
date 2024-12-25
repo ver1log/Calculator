@@ -9,9 +9,9 @@
 using namespace std;
 
 const int WIDTH = 440;
-const int HEIGHT = 600; //initial was 500 move to 600, increase bar height to 80, shift every buttons y-val 100 higher
+const int HEIGHT = 660; //initial was 600 move to 700,
 const int DELTA = 1;
-const int BLOCKWIDTH = 80;
+const int BLOCKWIDTH = 80;   
 const int BLOCKHEIGHT = 80;
 const SDL_Color WHITE = {255, 255, 255};
 class Calculator{
@@ -43,7 +43,7 @@ class Calculator{
         SDL_Rect rect14{121,501,80,80};
         SDL_Rect rect15{241,501,80,80};
         SDL_Rect rect16{361,501,80,80};
-        
+        SDL_Rect delRect{160,611,120,40};
         struct SDL_RectComparator
         {
             bool operator()(const SDL_Rect& a, const SDL_Rect& b) const
@@ -94,6 +94,7 @@ class Calculator{
         rects.push_back(rect14);
         rects.push_back(rect15);
         rects.push_back(rect16);
+        rects.push_back(delRect);
         
         mapper.insert(std::make_pair(rect1, "1"));
         mapper.insert(std::make_pair(rect2, "2"));
@@ -111,7 +112,7 @@ class Calculator{
         mapper.insert(std::make_pair(rect14, "*"));
         mapper.insert(std::make_pair(rect15, "/"));
         mapper.insert(std::make_pair(rect16, "="));
-
+        mapper.insert(std::make_pair(delRect, "DEL"));
         //text stuff
         TTF_Init();
         font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 100); //font
@@ -136,6 +137,6 @@ class Calculator{
         void pressButton(int, int, string&);
         void doOperation(string&);
         void parseValidInput(string&);
-        bool validTwoPointerCheck(string);
+        bool isValidInput(string);
 };
 #endif
