@@ -220,7 +220,6 @@ bool Calculator::isValidInput(string s){
         //cout << ":" << s << endl;
         return false;
     }
-    //else if()//thing before and after operator must be two numbers
     //figure out a way to handle the case where a decimal comes right before a operator->invalid, if it comes after it is valid
     else{ //checks that none of the operations come back to back
         //cout << ":" << s << "|\n";
@@ -269,6 +268,144 @@ bool Calculator::isValidInput(string s){
 
 void Calculator::parseValidInput(string &s){
     //all the logic to do the actual computation on a valid user input
-    s = "VALID!!!";
+    //break the string into elements of a vector<string>
+    //loop until there is only one element left inside the vector
+        //we will loop until we find an element of highest presence and then switch the element we are looking for once we no longer see that element
+        //evaluate the element before and after the operator in respect to the operator, ex 2+3 the two elements would be 2 and 3 
+        //once those three elements are evaluated place the output inside the element where the operator was and shift everything to the left, to shift convert to string
+        //check the next operator with highest presedence
+    //repeat this process until a single non-empty element remains or there a single actual element remains
+    
+
+    //precedence arrays
+    string MD[2] = {"*","/"}; //set these elements to 0 when they no longer appear in the array, this tells us to 
+    string AS[2] = {"+","-"};
+    vector<string> str = convertToList(s);
+    //last checking, for undefined
+    for(int i = 0; i<str.size(); i++){
+        if(str[i] == "/"){
+            if(stod(str[i+1]) == 0){
+                s = " UNDEF!!!";
+                return;
+            }
+        }
+    }
+
+    for(string e:str){
+        cout << e << ",";
+    }
+    cout << endl;
+    string placeHolder = "";
+    double res = 0;
+    while(str.size() != 1){ //continue while we did not get the final result
+        int operatorIndex = 0;
+        while(MD[0] != "0" && MD[1] != "0"){ //do the multpily and divide operation until there are still 
+            //loop until either of the operators are encountered
+            //do the actual operation
+            //put the result inside the position of the operator
+            //place "" in the index before and after
+            //convert to a string 
+            //convert back to a list
+            for(int i = 0; i <str.size(); i++){
+                if(str[i] == "*"){
+                    operatorIndex = i;
+                    res += (stod(str[i-1])*stod(str[i+1]));
+                    str[i-1] = str[i+1] = "";
+                    str[operatorIndex] = to_string(res);
+                    i = 0;
+                } 
+                else if(str[i] == "/"){
+                    operatorIndex = i;
+                    res += (stod(str[i-1]))/(stod(str[i+1]));
+                    str[i-1] = str[i+1] = "";
+                    str[operatorIndex] = to_string(res);
+                    i = 0;
+                }
+                placeHolder = convertToString(str);
+                str = convertToList(placeHolder);
+                res = 0; //reset the temp value
+                if(count(str.begin(),str.end(), "*") == 0){
+                    MD[0] = "0";
+                }
+                if(count(str.begin(),str.end(), "/") == 0){
+                    MD[1] = "0";
+                }
+            }
+        }
+        if(MD[0] == "0" && MD[1] == "0"){ //start doing the add and sub operation once the multiply and divide operator are not in the list
+            while(AS[0] != "0" && AS[1] != "0"){
+                for(int i = 0; i <str.size(); i++){
+                    if(str[i] == "+"){
+                        operatorIndex = i;
+                        res += (stod(str[i-1])+stod(str[i+1]));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i=0;
+                    }
+                    else if(str[i] == "-"){
+                        operatorIndex = i;
+                        res += (stod(str[i-1])-stod(str[i+1]));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i=0;
+                    }
+                    placeHolder = convertToString(str);
+                    str = convertToList(placeHolder);
+                    res = 0; //reset the temp value
+                    if(count(str.begin(),str.end(), "+") == 0){
+                        AS[0] = "0";
+                    }
+                    if(count(str.begin(),str.end(), "-") == 0){
+                        AS[1] = "0";
+                    }
+                }
+            }
+        }
+        placeHolder = " " + convertToString(str);
+        str = convertToList(placeHolder);    
+    }
+    if(placeHolder.length()>8){
+        placeHolder = placeHolder.erase(8); 
+    }
+    
+    
+    s = placeHolder;
     //PEMDAS
+}
+
+vector<string> Calculator::convertToList(string s)
+{
+    //second parameter of substr is the number of elements foward we will be accounting for 
+    vector<string> result;
+    int lookupIndex = 0; //index to look ahead will be incremented each iteration
+    int currentIndex = 0; //will only be incremented to the lookup index when special char is encountered
+    int countOperations = 0;
+    while(lookupIndex < s.length()){ //while we can still look at the elements
+        if(s[lookupIndex] == '*' || s[lookupIndex] == '/' || s[lookupIndex] == '+' || s[lookupIndex] == '-'){ //if we encouter the special characters
+            result.push_back(s.substr(currentIndex,(lookupIndex-currentIndex))); //add the substring of where our current pointer is at to the element before the operation ones to the vector
+            result.push_back(string(1, s[lookupIndex])); //add the operation to the vector
+            //s.replace(currentIndex,lookupIndex,""); //set the substring that we added to vector from the string to empty
+            lookupIndex++; //increment the looking ahead index to the next element
+            currentIndex = lookupIndex; //set the current to the index after the operation element
+            countOperations++;
+        }
+        else{ //if we dont encounter an operand, only increment the looking ahead index, current stays in the same position
+            lookupIndex++;
+        }
+    }
+    //the number of elements in the vector is (number of operand+number of numbers(operands+1))
+    if(result.size() != (countOperations+countOperations+1)){
+        cout << "test!\n";
+        result.push_back(s.substr(currentIndex,s.length() - currentIndex)); //push the remaining part of the string onto the vector
+    }
+    return result;
+}
+
+string Calculator::convertToString(vector<string> vect)
+{
+    string res = "";
+    for(int i = 0; i<vect.size(); i++){
+        res+=vect[i];
+    }
+    return res;
 }
