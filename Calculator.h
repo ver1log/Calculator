@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <algorithm>
 using namespace std;
 
 const int WIDTH = 440;
@@ -138,5 +139,8 @@ class Calculator{
         void doOperation(string&);
         void parseValidInput(string&);
         bool isValidInput(string);
+        //helper functions
+        vector<string> convertToList(string s);
+        string convertToString(vector<string> vect);
 };
 #endif
