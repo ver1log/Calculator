@@ -309,7 +309,7 @@ void Calculator::parseValidInput(string &s){
             for(int i = 0; i <str.size(); i++){
                 if(str[i] == "*"){
                     operatorIndex = i;
-                    res += (stod(str[i-1])*stod(str[i+1]));
+                    res += (stod(str[i-1])*stod(str[i+1])   );
                     str[i-1] = str[i+1] = "";
                     str[operatorIndex] = to_string(res);
                     i = 0;
@@ -330,6 +330,10 @@ void Calculator::parseValidInput(string &s){
                 if(count(str.begin(),str.end(), "/") == 0){
                     MD[1] = "0";
                 }
+                cout <<"Mul/div operation"<< endl;
+                    for(string e:str){
+                        cout << e << " , ";
+                    }
             }
         }
         if(MD[0] == "0" && MD[1] == "0"){ //start doing the add and sub operation once the multiply and divide operator are not in the list
@@ -357,6 +361,10 @@ void Calculator::parseValidInput(string &s){
                     }
                     if(count(str.begin(),str.end(), "-") == 0){
                         AS[1] = "0";
+                    }
+                    cout <<"Add/sub operation"<< endl;
+                    for(string e:str){
+                        cout << e << " , ";
                     }
                 }
             }
