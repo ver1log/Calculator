@@ -116,7 +116,7 @@ class Calculator{
         mapper.insert(std::make_pair(delRect, "DEL"));
         //text stuff
         TTF_Init();
-        font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/Sans.ttf", 100); //font
+        font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/res/Sans.ttf", 100); //font
         cout << "font loaded\n";
         if(!font) {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
