@@ -14,7 +14,7 @@ using namespace std;
     //calcultor class with a vector of strings that stores in each element the key that was pressed
 //3.when they hit enter display the output done with those operations
 
-
+//pretty annoying error due to not accounting for negative numbers will come back and fix
 int main(int argc, char* argv[]) {
     Calculator calc;
     calc.run();
