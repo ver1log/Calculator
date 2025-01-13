@@ -22,7 +22,7 @@ g++ -Isdl/Include -Lsdl/lib main.o Calculator.o -o main.exe -lmingw32 -lSDL2main
 ```
 run generated executable
 
-### With installed(put into terminal)
+### With Make installed(put into terminal)
 
 ```
 make 
