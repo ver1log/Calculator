@@ -44,7 +44,9 @@ class Calculator{
         SDL_Rect rect14{121,501,80,80};
         SDL_Rect rect15{241,501,80,80};
         SDL_Rect rect16{361,501,80,80};
-        SDL_Rect delRect{160,611,120,40};
+        SDL_Rect delRect{20,611,120,40};
+        SDL_Rect clrRect{160,611,120,40};
+        SDL_Rect negRect{300,611,120,40};
         struct SDL_RectComparator
         {
             bool operator()(const SDL_Rect& a, const SDL_Rect& b) const
@@ -96,7 +98,9 @@ class Calculator{
         rects.push_back(rect15);
         rects.push_back(rect16);
         rects.push_back(delRect);
-        
+        rects.push_back(clrRect);
+        rects.push_back(negRect);
+
         mapper.insert(std::make_pair(rect1, "1"));
         mapper.insert(std::make_pair(rect2, "2"));
         mapper.insert(std::make_pair(rect3, "3"));
@@ -114,6 +118,8 @@ class Calculator{
         mapper.insert(std::make_pair(rect15, "/"));
         mapper.insert(std::make_pair(rect16, "="));
         mapper.insert(std::make_pair(delRect, "DEL"));
+        mapper.insert(std::make_pair(clrRect, "CLR"));
+        mapper.insert(std::make_pair(negRect, "NEG"));
         //text stuff
         TTF_Init();
         font = TTF_OpenFont("C:/Users/Main/Desktop/C++ Projects/Calculator/res/Sans.ttf", 100); //font

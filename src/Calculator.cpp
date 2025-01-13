@@ -132,15 +132,32 @@ void Calculator::run(){
         SDL_RenderCopy(renderer, buttonMessage, NULL, &delRect);
         SDL_DestroyTexture(buttonMessage); // Free the texture after rendering
         SDL_FreeSurface(surfaceMessage); // Free the surface to avoid memory leaks
+        //render clear button
+        surfaceMessage = TTF_RenderText_Solid(font, "CLR", WHITE);
+        buttonMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+        SDL_RenderCopy(renderer, buttonMessage, NULL, &clrRect);
+        SDL_DestroyTexture(buttonMessage); // Free the texture after rendering
+        SDL_FreeSurface(surfaceMessage); // Free the surface to avoid memory leaks
+        //render negative button
+        surfaceMessage = TTF_RenderText_Solid(font, "NEG", WHITE);
+        buttonMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+        SDL_RenderCopy(renderer, buttonMessage, NULL, &negRect);
+        SDL_DestroyTexture(buttonMessage); // Free the texture after rendering
+        SDL_FreeSurface(surfaceMessage); // Free the surface to avoid memory leaks
 
         //rendering the user bar
         SDL_SetRenderDrawColor(renderer, 110, 110, 110, 0); //the color we are about to render
         SDL_RenderFillRect(renderer,&bar); //color above to this is rendered into the bar
         surfaceMessage = TTF_RenderText_Solid(font, barDisplay.c_str(), WHITE); //sub back for two upper lines
         barMessage = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //message itself;
-        SDL_GetClipRect(surfaceMessage, &bar); //this will handle the text so it doesnt get smooshed
-        SDL_RenderCopy(renderer, barMessage, NULL, &bar);
-
+        if(barDisplay == " "){
+            SDL_RenderCopy(renderer, barMessage, NULL, &bar);
+        }
+        else{
+            SDL_GetClipRect(surfaceMessage, &bar); //this will handle the text so it doesnt get smooshed
+            SDL_RenderCopy(renderer, barMessage, NULL, &bar);
+        }
+        
         SDL_DestroyTexture(barMessage); //free the message for the bar so it doesnt get overwritten
         SDL_FreeSurface(surfaceMessage);
 
@@ -176,16 +193,27 @@ void Calculator::pressButton(int MouseX, int MouseY, string &barMessage)
                     }
                     return; 
                 }
+                else if(iter->second == "CLR"){
+                    barMessage = " ";
+                    return;
+                }
+                else if(iter->second == "NEG"){
+                    barMessage+="N";
+                    return;
+                }
                 barMessage+=iter->second;
                 if(iter->second == "="){
                     barMessage.pop_back();
                     this->doOperation(barMessage);
                 } 
             }
-            else if(barMessage.length() >= 9){ //only allow the delete button
+            else if(barMessage.length() >= 9){ //only allow the delete and clear button
                 if(iter->second == "DEL"){
                     barMessage.pop_back();
                 } 
+                else if(iter->second == "CLR"){
+                    barMessage = " ";
+                }
             }
         }
            
@@ -219,6 +247,22 @@ bool Calculator::isValidInput(string s){
     else if(s[s.length()-1] == operations[0][0] ||s[s.length()-1] == operations[1][0] ||s[s.length()-1] == operations[2][0] ||s[s.length()-1] == operations[3][0] || s[s.length()-1] == operations[4][0]){
         //cout << ":" << s << endl;
         return false;
+    }
+    else if(s.find('N') != std::string::npos){
+        for(int i = 0; i< s.length(); i++){
+            if(s[i] == 'N' && i == s.length()-1){
+                return false;
+            }
+            else if(s[i] == 'N' && i != s.length()-1 && i != 0){
+                if(s[i] == operations[0][0] ||s[i] == operations[1][0] ||s[i] == operations[2][0] ||s[i] == operations[3][0]){
+                    return false;
+                }
+            }
+        }
+        if(s.length() == 1){
+            return false;
+        }
+        return true;
     }
     //figure out a way to handle the case where a decimal comes right before a operator->invalid, if it comes after it is valid
     else{ //checks that none of the operations come back to back
@@ -281,10 +325,13 @@ void Calculator::parseValidInput(string &s){
     string MD[2] = {"*","/"}; //set these elements to 0 when they no longer appear in the array, this tells us to 
     string AS[2] = {"+","-"};
     vector<string> str = convertToList(s);
+    if(str.size() == 1){
+        return;
+    }
     //last checking, for undefined
     for(int i = 0; i<str.size(); i++){
         if(str[i] == "/"){
-            if(stod(str[i+1]) == 0){
+            if(str[i+1] == "0"){
                 s = " UNDEF!!!";
                 return;
             }
@@ -298,6 +345,7 @@ void Calculator::parseValidInput(string &s){
     string placeHolder = "";
     double res = 0;
     while(str.size() != 1){ //continue while we did not get the final result
+    cout << "entered whole\n";
         int operatorIndex = 0;
         while(MD[0] != "0" && MD[1] != "0"){ //do the multpily and divide operation until there are still 
             //loop until either of the operators are encountered
@@ -307,19 +355,69 @@ void Calculator::parseValidInput(string &s){
             //convert to a string 
             //convert back to a list
             for(int i = 0; i <str.size(); i++){
-                if(str[i] == "*"){
+                if(str[i] == "*"){ //if the operator is encountered
+                cout << "entered mul\n";
                     operatorIndex = i;
-                    res += (stod(str[i-1])*stod(str[i+1])   );
-                    str[i-1] = str[i+1] = "";
-                    str[operatorIndex] = to_string(res);
-                    i = 0;
+                    if(str[i-1][1] == 'N' && str[i+1][0] == 'N'){
+                        str[i-1][1] = str[i+1][0] = ' '; 
+                        res += ((-stod(str[i-1]))*(-stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else if(str[i-1][1] == 'N'){ 
+                        str[i-1][1] = ' '; 
+                        res += ((-stod(str[i-1]))*(stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else if(str[i+1][0] == 'N'){
+                        str[i+1][0] = ' '; 
+                        res += ((stod(str[i-1]))*(-stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else{
+                        res += (stod(str[i-1])*stod(str[i+1])   );
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0; 
+                    }
+                    
                 } 
                 else if(str[i] == "/"){
+                    cout << "entered div\n";
                     operatorIndex = i;
-                    res += (stod(str[i-1]))/(stod(str[i+1]));
-                    str[i-1] = str[i+1] = "";
-                    str[operatorIndex] = to_string(res);
-                    i = 0;
+                    if(str[i-1][1] == 'N' && str[i+1][0] == 'N'){
+                        str[i-1][1] = str[i+1][0] = ' '; 
+                        res += ((-stod(str[i-1]))/(-stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else if(str[i-1][1] == 'N'){
+                        str[i-1][1] = ' '; 
+                        res += ((-stod(str[i-1]))/(stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else if(str[i+1][0] == 'N'){
+                        str[i+1][0] = ' '; 
+                        res += ((stod(str[i-1]))/(-stod(str[i+1])));
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0;
+                    }
+                    else{
+                        res += (stod(str[i-1])/stod(str[i+1])   );
+                        str[i-1] = str[i+1] = "";
+                        str[operatorIndex] = to_string(res);
+                        i = 0; 
+                    }
+                    
                 }
                 placeHolder = convertToString(str);
                 str = convertToList(placeHolder);
@@ -340,18 +438,80 @@ void Calculator::parseValidInput(string &s){
             while(AS[0] != "0" && AS[1] != "0"){
                 for(int i = 0; i <str.size(); i++){
                     if(str[i] == "+"){
+                        cout << "entered add\n";
+                        operatorIndex = i;
+                        if(str[i-1][1] == 'N' && str[i+1][0] == 'N'){
+                            str[i-1][1] = str[i+1][0] = ' '; 
+                            res += ((-stod(str[i-1]))+((-stod(str[i+1]))));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else if(str[i-1][1] == 'N'){ 
+                            str[i-1][1] =  ' ';
+                            res += ((-stod(str[i-1]))+(stod(str[i+1])));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else if(str[i+1][0] == 'N'){
+                            str[i+1][0] = ' ';
+                            res += ((stod(str[i-1]))+((-stod(str[i+1]))));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else{
+                            res += (stod(str[i-1])+stod(str[i+1])   );
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0; 
+                        }
+                        /*
                         operatorIndex = i;
                         res += (stod(str[i-1])+stod(str[i+1]));
                         str[i-1] = str[i+1] = "";
                         str[operatorIndex] = to_string(res);
                         i=0;
+                        */
                     }
                     else if(str[i] == "-"){
+                        cout << "entered sub\n";
+                        operatorIndex = i;
+                        if(str[i-1][1] == 'N' && str[i+1][0] == 'N'){
+                            str[i-1][1] = str[i+1][0] = ' ';
+                            res += ((-stod(str[i-1]))-((-stod(str[i+1]))));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else if(str[i-1][1] == 'N'){ 
+                            str[i-1][1] =  ' ';
+                            res += ((-stod(str[i-1]))-(stod(str[i+1])));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else if(str[i+1][0] == 'N'){
+                            str[i+1][0] = ' ';
+                            res += ((stod(str[i-1]))-((-stod(str[i+1]))));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0;
+                        }
+                        else{
+                            res += (stod(str[i-1])-stod(str[i+1]));
+                            str[i-1] = str[i+1] = "";
+                            str[operatorIndex] = to_string(res);
+                            i = 0; 
+                        }
+                        /*
                         operatorIndex = i;
                         res += (stod(str[i-1])-stod(str[i+1]));
                         str[i-1] = str[i+1] = "";
                         str[operatorIndex] = to_string(res);
                         i=0;
+                        */
                     }
                     placeHolder = convertToString(str);
                     str = convertToList(placeHolder);
@@ -375,8 +535,11 @@ void Calculator::parseValidInput(string &s){
     if(placeHolder.length()>8){
         placeHolder = placeHolder.erase(8); 
     }
-    
-    
+    /*
+    if(auto i = placeHolder.find('N') != std::string::npos){
+        placeHolder[i] = '-';
+    }
+    */
     s = placeHolder;
     //PEMDAS
 }
@@ -413,6 +576,9 @@ string Calculator::convertToString(vector<string> vect)
 {
     string res = "";
     for(int i = 0; i<vect.size(); i++){
+        if(vect[i].length() > 1 && vect[i][0] == '-'){
+            vect[i][0] = 'N';
+        }
         res+=vect[i];
     }
     return res;
