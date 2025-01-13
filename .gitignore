@@ -7,4 +7,5 @@
 *.lo
 *.o
 *.obj
-*.vscode
+#code editor specific stuff
+**/.vscode/
