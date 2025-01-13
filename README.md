@@ -11,7 +11,7 @@ Have a C++ 17+ complier
 
 This project has been tested on windows, porting to other systems is being tested
 
-Having make install is very convenient but can still be ran without it
+Having make installed is very convenient but the project can still be ran without it
 
 ### Without Make installed(put into terminal)
 
@@ -29,7 +29,7 @@ make
 ```
 run generated executable
 
-cleanup, get rid of executable and object files
+**cleanup, to get rid of executable and object files**
 
 ```
 make clean 
