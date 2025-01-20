@@ -14,7 +14,7 @@ clean:
 
 #explaining the last line
 #the -L in -Lsdl/lib tells the program where the .a and .dll are at for linking(we already complied), these contain all the functions 
-#.dll are dynamically linked librarys and are brought in only when they are needed at runtime 
-#while the .a are static and are loaded in when the program is linked
+#.dll are dynamically linked librarys and are brought in only when they are needed at program runtime 
+#while the .a are static and are loaded in when the program is linked in makefile, but during program compile time
 #we then link the object files into the execuatble, the linking librarys are needed at this point
 #the -l(lowercase L) is used to now link to the specific librarys that were clarified in the sdl/lib directory
