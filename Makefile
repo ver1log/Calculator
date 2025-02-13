@@ -9,7 +9,7 @@ all:
 
 clean:
 	del /f *.o main.exe
-#if on linux/mac
+#if on linux
 else
 all:
 	g++ -I/usr/include/SDL2 -c src/Calculator.cpp -o Calculator.o

@@ -1,28 +1,26 @@
 # **Calculator Project**
 
 
-A minimal calculator to strengthen fundamentals
+A minimal calculator written in C++
 
 
-![thumbnail](./images/calcscreen.png)
+![thumbnail](./images/calculator.png)
 
 ## Build Requirements
-Have a C++ 17+ complier 
+* A C++17 or newer compiler 
+* Windows: Install MinGW as the compiler
+* Linux/macOS: Ensure g++ is installed
+* make must be installed for building
 
-This project has been tested on windows, porting to other systems is being tested
-
-Having make installed is very convenient but the project can still be ran without it
-
-### Without Make installed(put into terminal)
-
+### On linux to have the nessesary SDL2 libraries(debian based)
+run in terminal
 ```
-g++ -Isdl/Include -I/usr/include/SDL2 -c src/Calculator.cpp -o Calculator.o
-g++ -Isdl/Include -I/usr/include/SDL2 -c src/main.cpp -o main.o
-g++ -Isdl/Include -Lsdl/lib main.o Calculator.o -o main.exe -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
+sudo apt update
+sudo apt upgrade
+sudo apt install libsdl2-dev libsdl2-ttf-dev
 ```
-run generated executable
 
-### With Make installed(put into terminal)
+### With Make installed
 
 ```
 make 
