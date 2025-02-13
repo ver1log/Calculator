@@ -9,3 +9,5 @@
 *.obj
 #code editor specific stuff
 **/.vscode/
+#executable on linux/unix
+main

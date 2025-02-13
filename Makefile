@@ -1,11 +1,26 @@
+# Detect OS, if it is windows it will have an output if on mac or linux it will be linux or darwin for mac
+OS := $(shell uname 2>/dev/null || echo Windows_NT)
+#if OS is windows
+ifeq ($(OS), Windows_NT)
 all:
 	g++ -Isdl/include -c src/Calculator.cpp -o Calculator.o
 	g++ -Isdl/include -c src/main.cpp -o main.o
 	g++ -Lsdl/lib main.o Calculator.o -o main.exe -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf
+
 clean:
 	del /f *.o main.exe
+#if on linux/mac
+else
+all:
+	g++ -I/usr/include/SDL2 -c src/Calculator.cpp -o Calculator.o
+	g++ -I/usr/include/SDL2 -c src/main.cpp -o main.o
+	g++ main.o Calculator.o -o main -lSDL2 -lSDL2_ttf
 
-#explaining what is done in the first two lines
+clean:
+	rm -f *.o main
+endif
+
+#explaining what is done in the first two lines of the all command
 # the -I tells the program where to look for the header files which are needed for compliation
 #since we are compiling and not linking in the first two lines we use the -c file 
 #the reason why the Isld/include, include can be capitalized is that windows is case insensitve
