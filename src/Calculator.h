@@ -10,77 +10,86 @@
 using namespace std;
 
 const int WIDTH = 440;
-const int HEIGHT = 660; //initial was 600 move to 700,
+const int HEIGHT = 660; // initial was 600 move to 700,
 const int DELTA = 1;
-const int BLOCKWIDTH = 80;   
+const int BLOCKWIDTH = 80;
 const int BLOCKHEIGHT = 80;
 const SDL_Color WHITE = {255, 255, 255};
-class Calculator{
-    private:
-        vector<string> keys;
-        SDL_Window* window= nullptr;
-        SDL_Renderer* renderer = nullptr;
-        SDL_Event event; //event object
-        TTF_Font* font = nullptr;
-        SDL_Surface* surfaceMessage = nullptr;
-        SDL_Texture* barMessage = nullptr;
-        SDL_Texture* buttonMessage = nullptr;
-        //set some rectangle fields
-        vector<SDL_Rect> rects;
-        SDL_Rect bar{10,30,420,120};
-        SDL_Rect rect1{0,170,80,80};
-        SDL_Rect rect2{121,170,80,80};
-        SDL_Rect rect3{241,170,80,80};
-        SDL_Rect rect4{361,170,80,80};
-        SDL_Rect rect5{0,281,80,80};
-        SDL_Rect rect6{121,281,80,80};
-        SDL_Rect rect7{241,281,80,80};
-        SDL_Rect rect8{361,281,80,80};
-        SDL_Rect rect9{0,391,80,80};
-        SDL_Rect rect10{121,391,80,80};
-        SDL_Rect rect11{241,391,80,80};
-        SDL_Rect rect12{361,391,80,80};
-        SDL_Rect rect13{0,501,80,80};
-        SDL_Rect rect14{121,501,80,80};
-        SDL_Rect rect15{241,501,80,80};
-        SDL_Rect rect16{361,501,80,80};
-        SDL_Rect delRect{20,611,120,40};
-        SDL_Rect clrRect{160,611,120,40};
-        SDL_Rect negRect{300,611,120,40};
-        struct SDL_RectComparator
+class Calculator
+{
+private:
+    vector<string> keys;
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
+    SDL_Event event; // event object
+    TTF_Font *font = nullptr;
+    SDL_Surface *surfaceMessage = nullptr;
+    SDL_Texture *barMessage = nullptr;
+    SDL_Texture *buttonMessage = nullptr;
+    // set some rectangle fields
+    vector<SDL_Rect> rects;
+    SDL_Rect bar{10, 30, 420, 120};
+    SDL_Rect rect1{0, 170, 80, 80};
+    SDL_Rect rect2{121, 170, 80, 80};
+    SDL_Rect rect3{241, 170, 80, 80};
+    SDL_Rect rect4{361, 170, 80, 80};
+    SDL_Rect rect5{0, 281, 80, 80};
+    SDL_Rect rect6{121, 281, 80, 80};
+    SDL_Rect rect7{241, 281, 80, 80};
+    SDL_Rect rect8{361, 281, 80, 80};
+    SDL_Rect rect9{0, 391, 80, 80};
+    SDL_Rect rect10{121, 391, 80, 80};
+    SDL_Rect rect11{241, 391, 80, 80};
+    SDL_Rect rect12{361, 391, 80, 80};
+    SDL_Rect rect13{0, 501, 80, 80};
+    SDL_Rect rect14{121, 501, 80, 80};
+    SDL_Rect rect15{241, 501, 80, 80};
+    SDL_Rect rect16{361, 501, 80, 80};
+    SDL_Rect delRect{20, 611, 120, 40};
+    SDL_Rect clrRect{160, 611, 120, 40};
+    SDL_Rect negRect{300, 611, 120, 40};
+    struct SDL_RectComparator
+    {
+        bool operator()(const SDL_Rect &a, const SDL_Rect &b) const
         {
-            bool operator()(const SDL_Rect& a, const SDL_Rect& b) const
-            {
-                if (a.x != b.x) return a.x < b.x;
-                if (a.y != b.y) return a.y < b.y;
-                if (a.w != b.w) return a.w < b.w;
-                return a.h < b.h;
-            }
-        };
-         std::map<SDL_Rect, std::string, SDL_RectComparator> mapper;
-    public:
-    Calculator(){
-        //to get a screen we need both a window and renderer
-        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+            if (a.x != b.x)
+                return a.x < b.x;
+            if (a.y != b.y)
+                return a.y < b.y;
+            if (a.w != b.w)
+                return a.w < b.w;
+            return a.h < b.h;
+        }
+    };
+    std::map<SDL_Rect, std::string, SDL_RectComparator> mapper;
+
+public:
+    Calculator()
+    {
+        // to get a screen we need both a window and renderer
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+        {
             std::cerr << "SDL Init Error: " << SDL_GetError() << std::endl;
         }
-        //init window
-        window = SDL_CreateWindow("Calculator", 
-                                                SDL_WINDOWPOS_CENTERED, 
-                                                SDL_WINDOWPOS_CENTERED, 
-                                                WIDTH, HEIGHT, 0);
-        if (!window) {
+        // init window
+        window = SDL_CreateWindow("Calculator",
+                                  SDL_WINDOWPOS_CENTERED,
+                                  SDL_WINDOWPOS_CENTERED,
+                                  WIDTH, HEIGHT, 0);
+        if (!window)
+        {
             std::cerr << "Window Creation Error: " << SDL_GetError() << std::endl;
             SDL_Quit();
         }
-        //init renderer
+        // init renderer
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        if (!renderer) {
+        if (!renderer)
+        {
             std::cerr << "Renderer Creation Error: " << SDL_GetError() << std::endl;
             SDL_DestroyWindow(window);
             SDL_Quit();
         }
-        
+
         rects.push_back(rect1);
         rects.push_back(rect2);
         rects.push_back(rect3);
@@ -120,18 +129,18 @@ class Calculator{
         mapper.insert(std::make_pair(delRect, "DEL"));
         mapper.insert(std::make_pair(clrRect, "CLR"));
         mapper.insert(std::make_pair(negRect, "NEG"));
-        //text stuff
+        // text stuff
         TTF_Init();
-        font = TTF_OpenFont("./res/Sans.ttf", 100); //font
+        font = TTF_OpenFont("./res/Sans.ttf", 100); // font
         cout << "font loaded\n";
-        if(!font) {
+        if (!font)
+        {
             std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
             exit(1);
         }
-        
-        
     }
-    ~Calculator(){
+    ~Calculator()
+    {
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_FreeSurface(surfaceMessage);
@@ -140,13 +149,13 @@ class Calculator{
         TTF_CloseFont(font);
         SDL_Quit();
     }
-        void run();
-        void pressButton(int, int, string&);
-        void doOperation(string&);
-        void parseValidInput(string&);
-        bool isValidInput(string);
-        //helper functions
-        vector<string> convertToList(string s);
-        string convertToString(vector<string> vect);
+    void run();
+    void pressButton(int, int, string &);
+    void doOperation(string &);
+    void parseValidInput(string &);
+    bool isValidInput(string);
+    // helper functions
+    vector<string> convertToList(string s);
+    string convertToString(vector<string> vect);
 };
 #endif
